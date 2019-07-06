@@ -383,9 +383,12 @@
 				\item When new interactions are added, the copurchase graph and the item representation would also change as well.
 				\item GCN can also be replaced with other models such as GraphSAGE or PinSAGE (\textit{Hierarchical Temporal Convolutional Networks for Dynamic Recommender Systems}, You et al., 2019)
 			\end{itemize}
-			\item GraphSAGE on the user-item bipartite graph itself
+			\item GCN on the user-item bipartite graph itself
 			\begin{itemize}
-				\item Will discuss more in the Jupyter Notebook.
+				\item With one layer, becomes GCMC (van den Berg et al., 2017)
+				\item With neighbor sampling, becomes GraphSAGE.
+				\item Latest work include STAR-GCN (Zhang et al., 2019) which also deal with cold start problems.
+				\item Will discuss more about GraphSAGE in the Jupyter Notebook.
 			\end{itemize}
 		\end{itemize}
 	\end{frame}
