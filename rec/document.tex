@@ -107,7 +107,7 @@
 				\begin{itemize}
 					\item \textbf{User-based}: Infer how a user $i$ would act to an item $j$ by looking at how users that have similar interactions to user $i$ acted to item $j$.
 					\begin{itemize}
-						\item<2> We have millions of customers.
+						\item<2-> We have millions of customers.
 						\item<3> User profiles change constantly and quickly, requiring frequent rebuilds (which are expensive already).
 						\note[item]{Build complexity is $O(U^2I)$}
 					\end{itemize}
@@ -169,33 +169,225 @@
 	\end{frame}
 
 	\begin{frame}
-		\frametitle{Content-based recommendation}
-		\begin{itemize}
-			\item 
-		\end{itemize}
+		\frametitle{\only<-3>{Latent Factor Model}\only<4->{Matrix Factorization (Explicit Feedback)}}
+		\begin{columns}
+			\begin{column}{0.6\textwidth}
+				\begin{itemize}
+					\item<1-> An item can be described with a \only<1-3>{set of features (e.g. how sweet some food is).}%
+					\only<4->{\alert<4>{vector $v_j$}.}
+					\item<2-> A user can be described with \only<1-4>{preferences of the same set of features (e.g. how much a user likes sweet food).}%
+					\only<5->{\alert<5>{another vector $u_i$}}
+					\item<3-> The \only<1-5>{interaction}%
+					\only<6->{\alert<6>{rating on item $j$ by user $i$}.}
+					is defined by \only<1-5>{how well the item features match the user preferences.}%
+					\only<6->{\alert<6>{$u_i^\top v_j$}.}
+					\item<7-> \alert<7>{We minimize
+					$$
+					\sum_{i,j}\left(r_{i,j} - u_i^\top v_j\right)^2
+					$$}
+				\end{itemize}
+			\end{column}
+			\begin{column}{0.4\textwidth}
+				\begin{center}
+					\centering
+					\includegraphics[width=\textwidth]{images/matrix_factorization.png}
+					
+					{\tiny Source: \href{https://katbailey.github.io/post/matrix-factorization-with-tensorflow/}{\color{blue} Kat Bailey}}
+				\end{center}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Matrix Factorization (Explicit Feedback)}
+		\begin{columns}
+			\begin{column}{0.6\textwidth}
+				\begin{itemize}
+					\item<1-> We minimize
+					$$
+					\sum_{i,j}\left(r_{i,j} -
+					\only<1-2>{u_i^\top v_j}%
+					\only<3->{\alert<3>{
+					\left(u_i^\top v_j + b_{u_i} + b_{u_j}\right)
+					}}\right)^2
+					$$
+					\item<2-> We actually don't handpick which set of features we want the model to learn; we solve it as a normal optimization problem.
+					\item<3-> Additionally learn a per-user and per-item bias to make it easier.
+				\end{itemize}
+			\end{column}
+			\begin{column}{0.4\textwidth}
+				\begin{center}
+					\centering
+					\includegraphics[width=\textwidth]{images/matrix_factorization.png}
+					
+					{\tiny Source: \href{https://katbailey.github.io/post/matrix-factorization-with-tensorflow/}{\color{blue} Kat Bailey}}
+				\end{center}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Matrix Factorization (Explicit Feedback)}
+		\begin{columns}
+			\begin{column}{0.6\textwidth}
+				\begin{itemize}
+					\item<1-> We minimize
+					$$
+					\begin{gathered}
+					\sum_{i,j}\left(r_{i,j} -
+					\left(u_i^\top v_j + b_{u_i} + b_{u_j}\right)
+					\right)^2 \\
+					\only<4>{\alert{+ \alpha\left(
+							\left\lVert U \right\rVert_F^2 + 
+							\left\lVert V \right\rVert_F^2
+							\right)}}
+					\end{gathered}
+					$$
+					\item<1-> What if the vectors are of \textbf{very} high dimensions?
+					\begin{itemize}
+						\item<2-> Use low-dimensional $u_i$ and $v_j$.
+					\end{itemize}
+					\item<3-> What if one product receives only one but very high rating?
+					\begin{itemize}
+						\item<4-> Penalize the magnitude of parameters.
+					\end{itemize}
+				\end{itemize}
+			\end{column}
+			\begin{column}{0.4\textwidth}
+				\begin{center}
+					\centering
+					\includegraphics[width=\textwidth]{images/matrix_factorization.png}
+					
+					{\tiny Source: \href{https://katbailey.github.io/post/matrix-factorization-with-tensorflow/}{\color{blue} Kat Bailey}}
+				\end{center}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Matrix Factorization (Explicit Feedback)}
+		\begin{columns}
+			\begin{column}{0.6\textwidth}
+				\begin{itemize}
+					\item<1-> We minimize
+					$$
+					\begin{gathered}
+					\sum_{
+						\only<1>{i,j}\only<2>{\alert{(i, j) \in \mathcal{B}}}
+					}\left(r_{i,j} -
+					\left(u_i^\top v_j + b_{u_i} + b_{u_j}\right)
+					\right)^2 \\
+					+ \alpha\left(
+						\left\lVert U \right\rVert_F^2 + 
+						\left\lVert V \right\rVert_F^2
+						\right)
+					\end{gathered}
+					$$
+					\item<2-> Optimize with Stochastic Gradient Descent
+					\begin{itemize}
+						\item<2-> Each time we sample a minibatch of interactions, and compute the gradient from this minibatch only.
+					\end{itemize}
+				\end{itemize}
+			\end{column}
+			\begin{column}{0.4\textwidth}
+				\begin{center}
+					\centering
+					\includegraphics[width=\textwidth]{images/matrix_factorization.png}
+					
+					{\tiny Source: \href{https://katbailey.github.io/post/matrix-factorization-with-tensorflow/}{\color{blue} Kat Bailey}}
+				\end{center}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{What if we don't have ratings?}
+		\begin{columns}
+			\begin{column}{0.5\textwidth}
+				\begin{center}
+					\centering
+					\includegraphics[width=\textwidth]{images/no-rating.png}
+				\end{center}
+			\end{column}
+			\begin{column}{0.5\textwidth}
+				\begin{center}
+					\centering
+					\includegraphics[width=\textwidth]{images/implicit.png}
+					
+					{\tiny Source: \textit{BPR: Bayesian Personalized Ranking from Implicit Feedback}, Rendle et al. 2012}
+				\end{center}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Matrix Factorization (Implicit Feedback)}
+		\begin{columns}
+			\begin{column}{0.6\textwidth}
+				\begin{itemize}
+					\item<1-> For a given user $i$, an item being interacted $j$ should have a higher score than another item $k$ which was never being interacted.
+					\item<2-> We maximize
+					$$
+					\sum_{i,j,k\in I \backslash I_{u_i}}
+					\log \dfrac{1}{1 + \exp\left(u_i^\top v_k - u_i^\top v_j\right)}
+					$$
+					\item<3-> We usually \emph{sample} one or multiple $k$ when computing gradients (\textbf{negative sampling}).
+					\begin{itemize}
+						\item Commonly uniformly, but adaptive sampling often helps.
+					\end{itemize}
+				\end{itemize}
+			\end{column}
+			\begin{column}{0.4\textwidth}
+				\begin{center}
+					\centering
+					\includegraphics[width=\textwidth]{images/implicit.png}
+					
+					{\tiny Source: \textit{BPR: Bayesian Personalized Ranking from Implicit Feedback}, Rendle et al. 2012}
+				\end{center}
+			\end{column}
+		\end{columns}
 	\end{frame}
 
 	\begin{frame}
 		\frametitle{Other Meaningful Aspects to Consider}
 		\begin{itemize}
-			\item \textbf{Cold-start}: What if we have \textit{new} users and items coming in, with few to no historical interactions?
-			\item \textbf{Bias correction}: The training dataset usually comes from the result of a \textit{previous recommender system}.  How to mitigate the bias?
-			\item \textbf{Diversity}: Always recommending the same items (or even the same kind of item) to a user would make him/her feel \textit{bored}.
+			\item \textbf{Cold-start}: What if we have \textit{new} users and items coming in, with few to no historical interactions? \pause
+			\item \textbf{Bias correction}: The training dataset usually comes from the result of a \textit{previous recommender system}.  How to mitigate the bias? \pause
+			\item \textbf{Diversity}: Always recommending the same items (or even the same kind of item) to a user would make him/her feel \textit{bored}. \pause
+			\item \textbf{Fraud}: How to detect and deal with fabricated explicit feedbacks (e.g. fake ratings and reviews)?
 		\end{itemize}
 	\end{frame}
 
 	\begin{frame}
 		\frametitle{Extensions of Matrix Factorization}
 		\begin{itemize}
-			\item The score function of vanilla MF: $u_i^\top v_j$
+			\item The score function of vanilla MF: $u_i^\top v_j$ where user and item representations are static and independent of each other (fixing the model).
 			\item RNN To integrate user history, $u_i = f(v_{u, 1}, v_{u, 2}, \cdots, v_{u, n})$
+			\begin{itemize}
+				\item The user representation now depends on his/her previously interacted items.
+			\end{itemize}
 			\item Graph-based models to integrate neighboring items/users (in the next slide).
-			\item Can also combine with content-based recommendation (i.e. with user and item features)
+			\begin{itemize}
+				\item The user representation could also depend on behaviors of other users/items.
+			\end{itemize}
+			\item Can combine with content-based recommendation (i.e. with user and item features).
+			\item Can combine both explicit and implicit feedbacks.
 		\end{itemize}
 	\end{frame}
 
 	\begin{frame}
 		\frametitle{Extensions of Matrix Factorization \tiny (with Graph-based Models)}
+		\begin{itemize}
+			\item Graph Convolutional Networks on an item copurchase graph
+			\begin{itemize}
+				\item When new interactions are added, the copurchase graph and the item representation would also change as well.
+				\item GCN can also be replaced with other models such as GraphSAGE or PinSAGE (\textit{Hierarchical Temporal Convolutional Networks for Dynamic Recommender Systems}, You et al., 2019)
+			\end{itemize}
+			\item GraphSAGE on the user-item bipartite graph itself
+			\begin{itemize}
+				\item Will discuss more in the Jupyter Notebook.
+			\end{itemize}
+		\end{itemize}
 	\end{frame}
 
 	\begin{frame}
