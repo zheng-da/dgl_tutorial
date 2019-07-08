@@ -9,6 +9,7 @@
 \usepackage{tikz}
 \usepackage{xspace}
 \usepackage{hyperref}
+\usepackage{xcolor}
 \usetheme{Singapore}
 
 \usepackage{environ}
@@ -23,6 +24,9 @@
 	\edef\tikzscale{\pgfmathresult}%
 	\BODY
 }
+
+\definecolor{B}{RGB}{200,37,6}
+\definecolor{D}{RGB}{3,101,192}
 
 \begin{document}
 	\author{Quan Gan}
@@ -388,7 +392,75 @@
 				\item With one layer, becomes GCMC (van den Berg et al., 2017)
 				\item With neighbor sampling, becomes GraphSAGE.
 				\item Latest work include STAR-GCN (Zhang et al., 2019) which also deal with cold start problems.
-				\item Will discuss more about GraphSAGE in the Jupyter Notebook.
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Learning Item Representations with GCN}
+		\begin{center}
+			\centering
+			\includegraphics[width=0.7\textwidth]{images/gcn.png}
+			
+			{\tiny Source: \textit{Graph Convolutional Neural Networks for Web-Scale Recommender Systems}, Ying et al. 2018}
+		\end{center}
+		\begin{itemize}
+			\item<1-> The graph is a copurchase graph.
+			\item<2-> Item features can be projected before GCN.
+			\item<3-> During inference, when new copurchases/items appear, we can just recompute the embeddings on the new graph with trained parameters.
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Learning Item Representations with GCN}
+		\begin{center}
+			\centering
+			\includegraphics[width=0.7\textwidth]{images/graphsage.png}
+		\end{center}
+		\begin{itemize}
+			\item<1-> GraphSAGE - neighbor sampling
+			\item<2-> PinSAGE - Neighbors determined by "top-K most frequent nodes visited by random walk with restarts"
+			\begin{itemize}
+				\item<3-> In the example: if $K=2$, then \textcolor{B}{B} could also be a neighbor of \textcolor{D}{D}.
+				\item<4-> For concrete details of the random walk algorithm, please refer to \textit{Pixie: A System for Recommending 3+ Billion Items to 200+ Million Users in Real-Time}, Eksombatchai et al., 2017
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Learning Both User and Item Representations with GCMC}
+		\begin{center}
+			\centering
+			\includegraphics[width=0.6\textwidth]{images/bipartite.png}
+			
+			{\tiny Source: \textit{Graph Convolutional Matrix Completion}, van den Berg et al. 2017}
+		\end{center}
+			$$
+			\begin{gathered}
+			\mu_{j \to i, r} = \dfrac{1}{c_{ij}} W_r x_j\\
+			h_i = \sigma \left[\mathrm{accum}\left(
+			\sum_{j \in \only<1>{\mathcal{N}_{i,1}}\only<2>{\alert{\mathcal{S}(\mathcal{N}_{i,1})}}} \mu_{j \to i, 1},
+			\cdots,
+			\sum_{j \in \only<1>{\mathcal{N}_{i,R}}\only<2>{\alert{\mathcal{S}(\mathcal{N}_{i,R})}}} \mu_{j \to i, R}
+			\right) \right] \\
+			u_i = \sigma(W h_i)\\
+			p(\hat{M}_{ij}=r) = \mathrm{softmax}(u_i^\top Q_r v_j)
+			\end{gathered}
+			$$
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Learning Both User and Item Representations with Star-GCN}
+		\begin{center}
+			\centering
+			\includegraphics[width=\textwidth]{images/stargcn.png}
+		\end{center}
+		\begin{itemize}
+			\item Vanilla GCMC can't deal with new users/items without features and with a few interactions.
+			\item STAR-GCN
+			\begin{itemize}
+				\item "Mask" the user/item embedding to 0 as if it is new.
+				\item Reconstruct the embedding after the forward pass and reconstruction pass.
 			\end{itemize}
 		\end{itemize}
 	\end{frame}
@@ -397,6 +469,8 @@
 		\begin{center}
 			\centering
 			\Huge Coding Session
+			
+			\Large GraphSAGE on bipartite user-item graph.
 		\end{center}
 	\end{frame}
 \end{document}
