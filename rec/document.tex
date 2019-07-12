@@ -187,83 +187,17 @@
 					\only<6->{\alert<6>{$u_i^\top v_j$}.}
 					\item<7-> \alert<7>{We minimize
 					$$
-					\sum_{i,j}\left(r_{i,j} - \left( u_i^\top v_j
-					\only<8>{\alert{+ b_{u_i} + b_{v_j}}}\right) \right)^2
-					$$}
-				\end{itemize}
-			\end{column}
-			\begin{column}{0.4\textwidth}
-				\begin{center}
-					\centering
-					\includegraphics[width=\textwidth]{images/matrix_factorization.png}
-					
-					{\tiny Source: \href{https://katbailey.github.io/post/matrix-factorization-with-tensorflow/}{\color{blue} Kat Bailey}}
-				\end{center}
-			\end{column}
-		\end{columns}
-	\end{frame}
-
-	\begin{frame}
-		\frametitle{Matrix Factorization (Explicit Feedback)}
-		\begin{columns}
-			\begin{column}{0.6\textwidth}
-				\begin{itemize}
-					\item<1-> We minimize
-					$$
 					\begin{gathered}
-					\sum_{i,j}\left(r_{i,j} -
-					\left(u_i^\top v_j + b_{u_i} + b_{u_j}\right)
-					\right)^2 \\
-					\only<4>{\alert{+ \alpha\left(
+					\sum_{
+						\only<1-9>{i,j}\only<10>{\alert{(i, j) \in \mathcal{B}}}
+					}\left(r_{i,j} - \left( u_i^\top v_j
+					\only<8->{\alert<8>{+ b_{u_i} + b_{v_j}}}\right) \right)^2 \\
+					\only<9->{\alert<9>{+ \alpha\left(
 							\left\lVert U \right\rVert_F^2 + 
 							\left\lVert V \right\rVert_F^2
 							\right)}}
 					\end{gathered}
-					$$
-					\item<1-> What if the vectors are of \textbf{very} high dimensions?
-					\begin{itemize}
-						\item<2-> Use low-dimensional $u_i$ and $v_j$.
-					\end{itemize}
-					\item<3-> What if one product receives only one but very high rating?
-					\begin{itemize}
-						\item<4-> Penalize the magnitude of parameters.
-					\end{itemize}
-				\end{itemize}
-			\end{column}
-			\begin{column}{0.4\textwidth}
-				\begin{center}
-					\centering
-					\includegraphics[width=\textwidth]{images/matrix_factorization.png}
-					
-					{\tiny Source: \href{https://katbailey.github.io/post/matrix-factorization-with-tensorflow/}{\color{blue} Kat Bailey}}
-				\end{center}
-			\end{column}
-		\end{columns}
-	\end{frame}
-
-	\begin{frame}
-		\frametitle{Matrix Factorization (Explicit Feedback)}
-		\begin{columns}
-			\begin{column}{0.6\textwidth}
-				\begin{itemize}
-					\item<1-> We minimize
-					$$
-					\begin{gathered}
-					\sum_{
-						\only<1>{i,j}\only<2>{\alert{(i, j) \in \mathcal{B}}}
-					}\left(r_{i,j} -
-					\left(u_i^\top v_j + b_{u_i} + b_{u_j}\right)
-					\right)^2 \\
-					+ \alpha\left(
-						\left\lVert U \right\rVert_F^2 + 
-						\left\lVert V \right\rVert_F^2
-						\right)
-					\end{gathered}
-					$$
-					\item<2-> Optimize with Stochastic Gradient Descent
-					\begin{itemize}
-						\item<2-> Each time we sample a minibatch of interactions, and compute the gradient from this minibatch only.
-					\end{itemize}
+					$$}
 				\end{itemize}
 			\end{column}
 			\begin{column}{0.4\textwidth}
