@@ -187,36 +187,9 @@
 					\only<6->{\alert<6>{$u_i^\top v_j$}.}
 					\item<7-> \alert<7>{We minimize
 					$$
-					\sum_{i,j}\left(r_{i,j} - u_i^\top v_j\right)^2
+					\sum_{i,j}\left(r_{i,j} - \left( u_i^\top v_j
+					\only<8>{\alert{+ b_{u_i} + b_{v_j}}}\right) \right)^2
 					$$}
-				\end{itemize}
-			\end{column}
-			\begin{column}{0.4\textwidth}
-				\begin{center}
-					\centering
-					\includegraphics[width=\textwidth]{images/matrix_factorization.png}
-					
-					{\tiny Source: \href{https://katbailey.github.io/post/matrix-factorization-with-tensorflow/}{\color{blue} Kat Bailey}}
-				\end{center}
-			\end{column}
-		\end{columns}
-	\end{frame}
-
-	\begin{frame}
-		\frametitle{Matrix Factorization (Explicit Feedback)}
-		\begin{columns}
-			\begin{column}{0.6\textwidth}
-				\begin{itemize}
-					\item<1-> We minimize
-					$$
-					\sum_{i,j}\left(r_{i,j} -
-					\only<1-2>{u_i^\top v_j}%
-					\only<3->{\alert<3>{
-					\left(u_i^\top v_j + b_{u_i} + b_{u_j}\right)
-					}}\right)^2
-					$$
-					\item<2-> We actually don't handpick which set of features we want the model to learn; we solve it as a normal optimization problem.
-					\item<3-> Additionally learn a per-user and per-item bias to make it easier.
 				\end{itemize}
 			\end{column}
 			\begin{column}{0.4\textwidth}
