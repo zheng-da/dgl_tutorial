@@ -143,6 +143,11 @@ class MovieLens(object):
         g = dgl.DGLGraph(multigraph=True)
         g.add_nodes(len(user_ids) + len(product_ids))
 
+        # node type
+        node_type = nd.zeros(g.number_of_nodes(), dtype='float32')
+        node_type[:len(user_ids)] = 1
+        g.ndata['type'] = node_type
+
         # user features
         for user_column in self.users.columns:
             udata = nd.zeros(g.number_of_nodes(), dtype='int64')
