@@ -206,6 +206,7 @@ class MovieLens(object):
                 data={'inv': nd.ones(self.ratings.shape[0], dtype='int32'),
                     'rating': nd.from_numpy(self.ratings['rating'].values.astype('float32'))})
         self.g = g
+        g.readonly()
         
     # Assign masks of training, validation and test set onto the DGL graph
     # according to the rating table.
