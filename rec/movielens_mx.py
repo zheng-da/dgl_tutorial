@@ -3,10 +3,6 @@ import pandas as pd
 import numpy as np
 import re
 import stanfordnlp
-import mxnet as mx
-from mxnet import ndarray as nd
-from mxnet import gluon, autograd
-import dgl
 import string
 import tqdm
 from functools import partial
@@ -131,6 +127,11 @@ class MovieLens(object):
 
     # process the features and build the DGL graph
     def build_graph(self):
+        import mxnet as mx
+        from mxnet import ndarray as nd
+        from mxnet import gluon, autograd
+        import dgl
+        
         user_ids = list(self.users.index)
         product_ids = list(self.products.index)
         user_ids_invmap = {id_: i for i, id_ in enumerate(user_ids)}
@@ -149,6 +150,7 @@ class MovieLens(object):
         g.ndata['type'] = node_type
 
         # user features
+        print('Adding user features...')
         for user_column in self.users.columns:
             udata = nd.zeros(g.number_of_nodes(), dtype='int64')
             # 0 for padding
@@ -157,6 +159,7 @@ class MovieLens(object):
             g.ndata[user_column] = udata
 
         # product genre
+        print('Adding product features...')
         product_genres = nd.from_numpy(self.products[self.genres].values.copy().astype('float32'))
         g.ndata['genre'] = nd.zeros((g.number_of_nodes(), len(self.genres)))
         g.ndata['genre'][len(user_ids):len(user_ids) + len(product_ids)] = product_genres
@@ -169,6 +172,7 @@ class MovieLens(object):
                     nd.from_numpy(self.products['year'].cat.codes.values.astype('int64') + 1)
 
         # product title
+        print('Parsing title...')
         nlp = stanfordnlp.Pipeline(use_gpu=False, processors='tokenize,lemma')
         vocab = set()
         title_words = []
@@ -211,6 +215,7 @@ class MovieLens(object):
     # Assign masks of training, validation and test set onto the DGL graph
     # according to the rating table.
     def generate_mask(self):
+        from mxnet import ndarray as nd
         valid_tensor = nd.from_numpy(self.ratings['valid'].values.astype('int32'))
         test_tensor = nd.from_numpy(self.ratings['test'].values.astype('int32'))
         train_tensor = nd.from_numpy(self.ratings['train'].values.astype('int32'))
