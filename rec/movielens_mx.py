@@ -122,8 +122,8 @@ class MovieLens(object):
     def data_split(self, ratings):
         ratings = ratings.groupby('user_id', group_keys=False).apply(
                 partial(self.split_user, filter_counts=10, timestamp=self.split_by_time))
-        ratings['train'] = ratings['prob'] <= 0.8
-        ratings['valid'] = (ratings['prob'] > 0.8) & (ratings['prob'] <= 0.9)
+        ratings['train'] = ratings['prob'] <= 0.5
+        ratings['valid'] = (ratings['prob'] > 0.5) & (ratings['prob'] <= 0.9)
         ratings['test'] = ratings['prob'] > 0.9
         ratings.drop(['prob'], axis=1, inplace=True)
         return ratings
