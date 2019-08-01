@@ -30,6 +30,7 @@ class MovieLens(object):
 
         data = {'id': int(id_), 'title': title, 'year': year}
         for i, g in enumerate(genres):
+            g = int(g)
             data['genre' + str(i)] = (g != 0)
         return data
     
